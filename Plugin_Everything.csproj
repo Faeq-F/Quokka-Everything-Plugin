@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net4.8-windows</TargetFramework>
     <Nullable>enable</Nullable>
+    <LangVersion>10.0</LangVersion>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
@@ -24,10 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EverythingSearchClient" Version="0.8.0.51" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Quokka\Quokka.csproj" />
   </ItemGroup>
 
@@ -41,6 +38,13 @@
     <Page Update="ContextPane.xaml">
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ContentWithTargetPath Include="Everything64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Everything64.dll</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
 

@@ -1,6 +1,7 @@
 ﻿using Quokka.ListItems;
 using Quokka.PluginArch;
-using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Plugin_Everything {
   /// <summary>
@@ -13,42 +14,38 @@ namespace Plugin_Everything {
     /// The name is "Everything"
     /// </summary>
     public string PluggerName { get; set; } = "Everything";
-    private Assembly EverythingSearchClient;
-    private Type SearchClient;
-    private object everything;
-    private MethodInfo EverythingSearchMethod;
-    private Type Result;
-    private Type SearchFlags;
-    private Type BehaviorWhenBusy;
-    private Type SortBy;
-    private Type SortDirection;
 
     /// <summary>
     /// 
     /// </summary>
     public Everything() {
-      EverythingSearchClient = Assembly.LoadFrom(
-        Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\EverythingSearchClient.dll"
-      );
-      SearchClient = EverythingSearchClient.GetType("EverythingSearchClient.SearchClient")!;
-      Result = EverythingSearchClient.GetType("EverythingSearchClient.Result")!;
-      SearchFlags = EverythingSearchClient.GetType("EverythingSearchClient.SearchClient.SearchFlags")!;
-      BehaviorWhenBusy = EverythingSearchClient.GetType("EverythingSearchClient.SearchClient.BehaviorWhenBusy")!;
-      SortBy = EverythingSearchClient.GetType("EverythingSearchClient.SearchClient.SortBy")!;
-      SortDirection = EverythingSearchClient.GetType("EverythingSearchClient.SearchClient.SortDirection")!;
-      everything = Activator.CreateInstance(SearchClient)!;
-      MethodInfo[] methodInfos = SearchClient.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-      EverythingSearchMethod = SearchClient.GetMethod("Search", new Type[] { typeof(string), SearchFlags, typeof(uint), typeof(uint), BehaviorWhenBusy, typeof(uint), SortBy, SortDirection })!;
+      Everything_SetRequestFlags(EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME | EVERYTHING_REQUEST_DATE_MODIFIED | EVERYTHING_REQUEST_SIZE);
+      Everything_SetSort(13);
+      Everything_SetMax(700);
     }
 
     /// <summary>
     /// This will get called when user types a query into the search field
     /// </summary>
     public List<ListItem> OnQueryChange(string query) {
-      dynamic res = EverythingSearchMethod.Invoke(everything, new string[] { query })!;
+      UInt32 i;
+      Everything_SetSearchW(query);
+      Everything_QueryW(true);
       List<ListItem> ItemList = new List<ListItem>();
-      foreach (dynamic item in res.Items) {
-        ItemList.Add(new EverythingItem(item.Name, item.Path));
+      for (i = 0; i < Everything_GetNumResults(); i++) {
+        long date_modified;
+        long size;
+        StringBuilder path = new StringBuilder(256);
+
+        Everything_GetResultDateModified(i, out date_modified);
+        Everything_GetResultSize(i, out size);
+        Everything_GetResultFullPathName(i, path, 256);
+        bool isFolderResult = Everything_IsFolderResult(i);
+
+        //if (isFolderResult) { Debug.WriteLine("Folder:"); } else { Debug.WriteLine("File:"); }
+        //Debug.WriteLine(path.ToString());
+        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString()));
+        //listBox1.Items.Insert((int) i, "Size: " + size.ToString() + " Date Modified: " + DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2") + " Filename: " + Marshal.PtrToStringUni(Everything_GetResultFileName(i)));
       }
       return ItemList;
     }
