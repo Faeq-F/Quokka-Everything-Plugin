@@ -1,5 +1,7 @@
-﻿using Quokka.ListItems;
+﻿using Newtonsoft.Json;
+using Quokka.ListItems;
 using Quokka.PluginArch;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -15,6 +17,9 @@ namespace Plugin_Everything {
     /// </summary>
     public string PluggerName { get; set; } = "Everything";
 
+    private static Settings pluginSettings = new();
+    internal static Settings PluginSettings { get => pluginSettings; set => pluginSettings = value; }
+
     /// <summary>
     /// 
     /// </summary>
@@ -22,6 +27,8 @@ namespace Plugin_Everything {
       Everything_SetRequestFlags(EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME | EVERYTHING_REQUEST_DATE_MODIFIED | EVERYTHING_REQUEST_SIZE);
       Everything_SetSort(13);
       Everything_SetMax(700);
+      string fileName = Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\settings.json";
+      PluginSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(fileName))!;
     }
 
     /// <summary>
@@ -41,11 +48,8 @@ namespace Plugin_Everything {
         Everything_GetResultSize(i, out size);
         Everything_GetResultFullPathName(i, path, 256);
         bool isFolderResult = Everything_IsFolderResult(i);
-
-        //if (isFolderResult) { Debug.WriteLine("Folder:"); } else { Debug.WriteLine("File:"); }
-        //Debug.WriteLine(path.ToString());
-        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString()));
-        //listBox1.Items.Insert((int) i, "Size: " + size.ToString() + " Date Modified: " + DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2") + " Filename: " + Marshal.PtrToStringUni(Everything_GetResultFileName(i)));
+        string dateModified = DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2");
+        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString(), isFolderResult, size.ToString(), dateModified));
       }
       return ItemList;
     }

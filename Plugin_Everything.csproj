@@ -15,13 +15,10 @@
     <Product>Plugin_Everything</Product>
     <BaseOutputPath>G:\Quokka\Quokka\PlugBoard\Plugin_Everything</BaseOutputPath>
     <Configurations>Debug;Release;Plugin</Configurations>
-
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,9 +29,6 @@
     <Compile Update="ContextPane.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="ContextPane.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -45,7 +39,91 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>Everything64.dll</TargetPath>
     </ContentWithTargetPath>
+
+    <ContentWithTargetPath Include="settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>settings.json</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
+  <ItemGroup>
+    <ContentWithTargetPath Include="Icons By Icons8.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Icons By Icons8.txt</TargetPath>
+    </ContentWithTargetPath>
+
+    <ContentWithTargetPath Include="archive.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>archive.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="audio.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>audio.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="code.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>code.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="database.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>database.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="desktopFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>desktopFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="document.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>document.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="documentsFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>documentsFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="downloadsFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>downloadsFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="file.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>file.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="font.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>font.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="gitFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>gitFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>image.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="imagesFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>imagesFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="musicFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>musicFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="onedriveFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>onedriveFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="system.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>system.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="video.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>video.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="videosFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>videosFolder.png</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
 
 </Project>
