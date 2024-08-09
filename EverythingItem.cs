@@ -1,5 +1,6 @@
 ﻿using Quokka;
 using Quokka.ListItems;
+using System.Diagnostics;
 using System.Windows.Media.Imaging;
 
 
@@ -7,27 +8,34 @@ namespace Plugin_Everything {
 
   class EverythingItem : ListItem {
 
+    public bool isFolder;
+
     public EverythingItem(string Name, string Path, bool isFolder, string size, string dateModified) {
       this.Name = Name;
       this.Description = Path;
+      this.isFolder = isFolder;
+
       if (isFolder) {
         string? iconName = null;
-        if (Name.ToLower() == "desktop") iconName = "desktopFolder.png";
-        else if (Name.ToLower() == "documents") iconName = "documentsFolder.png";
-        else if (Name.ToLower() == "downloads") iconName = "downloadsFolder.png";
-        else if (Name.ToLower() == "music") iconName = "musicFolder.png";
-        else if (Name.ToLower() == "pictures") iconName = "imagesFolder.png";
-        else if (Name.ToLower() == "videos") iconName = "videosFolder.png";
-        else if (Name.ToLower() == ".git") iconName = "gitFolder.png";
-        else if (Name.ToLower() == "onedrive") iconName = "onedriveFolder.png";
-        if (iconName != null) {
-          this.Icon = new BitmapImage(new Uri(
-        Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
-        } else {
-          this.Icon = new BitmapImage(new Uri(
-          Environment.CurrentDirectory + "\\Config\\Resources\\folder.png"));
+        switch (Name.ToLower()) {
+          case "desktop": iconName = "desktopFolder.png"; break;
+          case "documents": iconName = "documentsFolder.png"; break;
+          case "downloads": iconName = "downloadsFolder.png"; break;
+          case "music": iconName = "musicFolder.png"; break;
+          case "pictures": iconName = "imagesFolder.png"; break;
+          case "videos": iconName = "videosFolder.png"; break;
+          case ".git": iconName = "gitFolder.png"; break;
+          case "onedrive": iconName = "onedriveFolder.png"; break;
         }
+
+        if (iconName != null) {
+          this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
+        } else {
+          this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\Config\\Resources\\folder.png"));
+        }
+
       } else {
+
         string iconName = "file.png";
         string ext = System.IO.Path.GetExtension(Path);
         if (Everything.PluginSettings.ItemTypes.Document.Contains(ext)) iconName = "document.png";
@@ -39,14 +47,20 @@ namespace Plugin_Everything {
         else if (Everything.PluginSettings.ItemTypes.Code.Contains(ext)) iconName = "code.png";
         else if (Everything.PluginSettings.ItemTypes.Database.Contains(ext)) iconName = "database.png";
         else if (Everything.PluginSettings.ItemTypes.System.Contains(ext)) iconName = "system.png";
-        this.Icon = new BitmapImage(new Uri(
-        Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
+
+        this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
       }
     }
 
-    //When item is selected, open
+    /// <summary>
+    /// Opens the file / folder
+    /// </summary>
     public override void Execute() {
-
+      if (isFolder) {
+        Process.Start((string) App.Current.Resources["FileManager"], '"' + Description + '"');
+      } else {
+        Process.Start(Description);
+      }
       App.Current.MainWindow.Close();
     }
   }
