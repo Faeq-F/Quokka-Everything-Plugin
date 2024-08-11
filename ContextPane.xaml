@@ -68,7 +68,7 @@
           Margin="{DynamicResource NameTextMargin}"
           d:FontSize="16"
           d:Margin="0,-20,0,0"
-          d:Text="AppName"
+          d:Text="FileName"
           FontFamily="{DynamicResource AppFont}"
           FontSize="{DynamicResource NameTextSize}"
           Foreground="{DynamicResource NameTextColor}"
@@ -210,7 +210,7 @@
                 d:Height="20"
                 d:Margin="0,0,0,0"
                 d:Width="20"
-                Source="pack://siteoforigin:,,,/Config/Resources/open.png"
+                Source="pack://application:,,,/Plugin_Everything;component/preview.png"
                 UseLayoutRounding="True" />
             </Grid>
             <Grid Grid.Column="1">
@@ -223,7 +223,7 @@
                 d:Padding="10"
                 Background="Transparent"
                 BorderThickness="0"
-                Click="OpenApp"
+                Click="Preview"
                 Content="Preview"
                 FontFamily="{DynamicResource AppFont}"
                 FontSize="{DynamicResource ContextPaneListItemSize}"
@@ -245,7 +245,7 @@
                 d:Height="20"
                 d:Margin="0,0,0,0"
                 d:Width="20"
-                Source="pack://siteoforigin:,,,/Config/Resources/admin.png"
+                Source="pack://siteoforigin:,,,/Config/Resources/open.png"
                 UseLayoutRounding="True" />
             </Grid>
             <Grid Grid.Column="1">
@@ -257,7 +257,7 @@
                 d:Padding="10"
                 Background="Transparent"
                 BorderThickness="0"
-                Click="RunAsAdmin"
+                Click="OpenWith"
                 Content="Open With ..."
                 FontFamily="{DynamicResource AppFont}"
                 FontSize="{DynamicResource ContextPaneListItemSize}"
@@ -292,7 +292,7 @@
                 Background="Transparent"
                 BorderThickness="0"
                 Click="OpenContainingFolder"
-                Content="Open file location / "
+                Content="Open containing folder"
                 FontFamily="{DynamicResource AppFont}"
                 FontSize="{DynamicResource ContextPaneListItemSize}"
                 Foreground="{DynamicResource ContextPaneListItemColor}"

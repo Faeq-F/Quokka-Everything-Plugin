@@ -1,4 +1,12 @@
 {
+  "Previewer": "G:\\PortableApps\\QuickLook\\QuickLook.exe",
+  "EverythingSettings": {
+    "MatchPathFlag": "--MatchPath",
+    "MatchCaseFlag": "--MatchCase",
+    "MatchWholeWordFlag": "--MatchWholeWord",
+    "RegexFlag": "--Regex",
+    "MaxResultsFromQuery": "700"
+  },
   "ItemTypes": {
     "Document": [
       ".docx",

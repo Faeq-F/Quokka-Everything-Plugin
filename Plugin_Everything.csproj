@@ -112,6 +112,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>onedriveFolder.png</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="preview.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>preview.png</TargetPath>
+    </ContentWithTargetPath>
     <ContentWithTargetPath Include="system.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>system.png</TargetPath>

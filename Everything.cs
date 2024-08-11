@@ -3,6 +3,9 @@ using System.Text;
 
 namespace Plugin_Everything {
   public partial class Everything {
+
+    #region magic values
+
     const int EVERYTHING_OK = 0;
     const int EVERYTHING_ERROR_MEMORY = 1;
     const int EVERYTHING_ERROR_IPC = 2;
@@ -60,118 +63,138 @@ namespace Plugin_Everything {
     const int EVERYTHING_TARGET_MACHINE_X64 = 2;
     const int EVERYTHING_TARGET_MACHINE_ARM = 3;
 
+    #endregion
+
+    /// <summary>
+    /// The Everything_SetSearch function sets the search string for the IPC Query.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setsearch/
+    /// </summary>
+    /// <param name="lpSearchString">A string to be used as the new search text.</param>
+    /// <returns>This function has no return value.</returns>
     [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
     public static extern UInt32 Everything_SetSearchW(string lpSearchString);
+
+    /// <summary>
+    /// The Everything_SetMatchPath function enables or disables full path matching for the next call to Everything_Query. <br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setmatchpath/
+    /// </summary>
+    /// <param name="bEnable">Specifies whether to enable or disable full path matching.</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetMatchPath(bool bEnable);
+
+    /// <summary>
+    /// The Everything_SetMatchCase function enables or disables full path matching for the next call to Everything_Query. <br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setmatchcase/
+    /// </summary>
+    /// <param name="bEnable">Specifies whether the search is case sensitive or insensitive.</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetMatchCase(bool bEnable);
+
+    /// <summary>
+    /// The Everything_SetMatchWholeWord function enables or disables matching whole words for the next call to Everything_Query.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setmatchwholeword/
+    /// </summary>
+    /// <param name="bEnable">Specifies whether the search matches whole words, or can match anywhere.</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetMatchWholeWord(bool bEnable);
+
+    /// <summary>
+    /// The Everything_SetRegex function enables or disables Regular Expression searching. <br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setregex/
+    /// </summary>
+    /// <param name="bEnable">Set to non-zero to enable regex, set to zero to disable regex.</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetRegex(bool bEnable);
+
+    /// <summary>
+    /// The Everything_SetMax function sets the maximum number of results to return from Everything_Query.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setmax/
+    /// </summary>
+    /// <param name="dwMax">Specifies the maximum number of results to return.</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetMax(UInt32 dwMax);
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_SetOffset(UInt32 dwOffset);
 
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetMatchPath();
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetMatchCase();
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetMatchWholeWord();
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetRegex();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetMax();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetOffset();
-    [DllImport("Everything64.dll")]
-    public static extern IntPtr Everything_GetSearchW();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetLastError();
-
+    /// <summary>
+    /// The Everything_Query function executes an Everything IPC query with the current search state.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_query/
+    /// </summary>
+    /// <param name="bWait">Should the function wait for the results or return immediately.</param>
+    /// <returns>If the function succeeds, the return value is TRUE. If the function fails, the return value is FALSE.</returns>
     [DllImport("Everything64.dll")]
     public static extern bool Everything_QueryW(bool bWait);
 
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_SortResultsByPath();
-
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetNumFileResults();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetNumFolderResults();
+    /// <summary>
+    /// The Everything_GetNumResults function returns the number of visible file and folder results.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_getnumresults/
+    /// </summary>
+    /// <returns>Returns the number of visible file and folder results. If the function fails the return value is 0.</returns>
     [DllImport("Everything64.dll")]
     public static extern UInt32 Everything_GetNumResults();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetTotFileResults();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetTotFolderResults();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetTotResults();
+
+    /// <summary>
+    /// The Everything_IsVolumeResult function determines if the visible result is the root folder of a volume.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_isvolumeresult/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <returns>The function returns TRUE, if the visible result is a volume (For example: C:). The function returns FALSE, if the visible result is a folder or file (For example: C:\ABC.123). If the function fails the return value is FALSE.</returns>
     [DllImport("Everything64.dll")]
     public static extern bool Everything_IsVolumeResult(UInt32 nIndex);
+
+    /// <summary>
+    /// The Everything_IsFolderResult function determines if the visible result is a folder.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_isfolderresult/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <returns>The function returns TRUE, if the visible result is a folder or volume (For example: C: or c:\WINDOWS). The function returns FALSE, if the visible result is a file (For example: C:\ABC.123). If the function fails the return value is FALSE.</returns>
     [DllImport("Everything64.dll")]
     public static extern bool Everything_IsFolderResult(UInt32 nIndex);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_IsFileResult(UInt32 nIndex);
+
+    /// <summary>
+    /// The Everything_GetResultFullPathName function retrieves the full path and file name of the visible result.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_getresultfullpathname/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <param name="lpString">The buffer that will receive the text. If the string is as long or longer than the buffer, the string is truncated and terminated with a NULL character.</param>
+    /// <param name="nMaxCount">Specifies the maximum number of characters to copy to the buffer, including the NULL character. If the text exceeds this limit, it is truncated.</param>
     [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
     public static extern void Everything_GetResultFullPathName(UInt32 nIndex, StringBuilder lpString, UInt32 nMaxCount);
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_Reset();
 
+    /// <summary>
+    /// The Everything_GetResultFileName function retrieves the file name part only of the visible result.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_getresultfilename/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <returns>The function returns a pointer to a null terminated string of TCHARs. If the function fails the return value is NULL.</returns>
     [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
     public static extern IntPtr Everything_GetResultFileName(UInt32 nIndex);
 
-    // Everything 1.4
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_SetSort(UInt32 dwSortType);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetSort();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetResultListSort();
+    /// <summary>
+    /// The Everything_SetRequestFlags function sets the desired result data.<br />
+    /// https://www.voidtools.com/support/everything/sdk/everything_setrequestflags/
+    /// </summary>
+    /// <param name="dwRequestFlags">The request flags, can be zero or more of the following flags:<br />
+    /// EVERYTHING_REQUEST_FILE_NAME  (0x00000001)<br />EVERYTHING_REQUEST_PATH       (0x00000002)<br />EVERYTHING_REQUEST_FULL_PATH_A(0x00000004)<br />EVERYTHING_REQUEST_EXTENSION  (0x00000008)<br />EVERYTHING_REQUEST_SIZE       (0x00000010)<br />EVERYTHING_REQUEST_DATE_CREATE(0x00000020)<br />EVERYTHING_REQUEST_DATE_MODIFI(0x00000040)<br />EVERYTHING_REQUEST_DATE_ACCESS(0x00000080)<br />EVERYTHING_REQUEST_ATTRIBUTES (0x00000100)<br />EVERYTHING_REQUEST_FILE_LIST_F(0x00000200)<br />EVERYTHING_REQUEST_RUN_COUNT  (0x00000400)<br />EVERYTHING_REQUEST_DATE_RUN   (0x00000800)<br />EVERYTHING_REQUEST_DATE_RECENT(0x00001000)<br />EVERYTHING_REQUEST_HIGHLIGHTED(0x00002000)<br />EVERYTHING_REQUEST_HIGHLIGHTED(0x00004000)<br />EVERYTHING_REQUEST_HIGHLIGHTED(0x00008000)</param>
     [DllImport("Everything64.dll")]
     public static extern void Everything_SetRequestFlags(UInt32 dwRequestFlags);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetRequestFlags();
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetResultListRequestFlags();
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern IntPtr Everything_GetResultExtension(UInt32 nIndex);
+
+    /// <summary>
+    /// The Everything_GetResultSize function retrieves the size of a visible result.<br/>
+    /// https://www.voidtools.com/support/everything/sdk/everything_getresultsize/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <param name="lpFileSize">Pointer to a LARGE_INTEGER to hold the size of the result.</param>
+    /// <returns>The function returns non-zero if successful. The function returns 0 if size information is unavailable. </returns>
     [DllImport("Everything64.dll")]
     public static extern bool Everything_GetResultSize(UInt32 nIndex, out long lpFileSize);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetResultDateCreated(UInt32 nIndex, out long lpFileTime);
+
+    /// <summary>
+    /// The Everything_GetResultDateModified function retrieves the modified date of a visible result. <br/>
+    /// https://www.voidtools.com/support/everything/sdk/everything_getresultdatemodified/
+    /// </summary>
+    /// <param name="nIndex">Zero based index of the visible result.</param>
+    /// <param name="lpFileTime">A FILETIME to hold the modified date of the result.</param>
+    /// <returns>The function returns non-zero if successful. The function returns 0 if the modified date information is unavailable.</returns>
     [DllImport("Everything64.dll")]
     public static extern bool Everything_GetResultDateModified(UInt32 nIndex, out long lpFileTime);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetResultDateAccessed(UInt32 nIndex, out long lpFileTime);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetResultAttributes(UInt32 nIndex);
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern IntPtr Everything_GetResultFileListFileName(UInt32 nIndex);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetResultRunCount(UInt32 nIndex);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetResultDateRun(UInt32 nIndex, out long lpFileTime);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_GetResultDateRecentlyChanged(UInt32 nIndex, out long lpFileTime);
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern IntPtr Everything_GetResultHighlightedFileName(UInt32 nIndex);
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern IntPtr Everything_GetResultHighlightedPath(UInt32 nIndex);
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern IntPtr Everything_GetResultHighlightedFullPathAndFileName(UInt32 nIndex);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetRunCountFromFileName(string lpFileName);
-    [DllImport("Everything64.dll")]
-    public static extern bool Everything_SetRunCountFromFileName(string lpFileName, UInt32 dwRunCount);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_IncRunCountFromFileName(string lpFileName);
-    [DllImport("Everything64.dll")]
-    public static extern UInt32 Everything_GetResultPath(
-    int index
-);
   }
 }
