@@ -83,7 +83,7 @@ namespace Plugin_Everything {
     public static extern void Everything_SetMatchPath(bool bEnable);
 
     /// <summary>
-    /// The Everything_SetMatchCase function enables or disables full path matching for the next call to Everything_Query. <br />
+    /// The Everything_SetMatchCase function enables or disables case sensitivity for the next call to Everything_Query. <br />
     /// https://www.voidtools.com/support/everything/sdk/everything_setmatchcase/
     /// </summary>
     /// <param name="bEnable">Specifies whether the search is case sensitive or insensitive.</param>

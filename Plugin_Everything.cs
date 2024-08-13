@@ -25,9 +25,10 @@ namespace Plugin_Everything {
     /// </summary>
     public Everything() {
       Everything_SetRequestFlags(EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME | EVERYTHING_REQUEST_DATE_MODIFIED | EVERYTHING_REQUEST_SIZE);
-      Everything_SetMax(700);
+      Everything_SetMax(uint.Parse(Everything.PluginSettings.EverythingSettings.MaxResultsFromQuery));
       string fileName = Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\settings.json";
       PluginSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(fileName))!;
+      PluginSettings.Previewer = Path.GetFullPath(PluginSettings.Previewer);
     }
 
     /// <summary>
