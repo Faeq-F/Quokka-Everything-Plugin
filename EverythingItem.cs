@@ -12,7 +12,7 @@ namespace Plugin_Everything {
     public string size;
     public string dateModified;
 
-    public EverythingItem(string Name, string Path, bool isFolder, string size, string dateModified) {
+    public EverythingItem(string Name, string Path, bool isFolder, bool isVolume, string size, string dateModified) {
       this.Name = Name;
       this.Description = Path;
       this.isFolder = isFolder;
@@ -20,24 +20,31 @@ namespace Plugin_Everything {
       this.dateModified = dateModified;
 
       if (isFolder) {
-        string? iconName = null;
-        switch (Name.ToLower()) {
-          case "desktop": iconName = "desktopFolder.png"; break;
-          case "documents": iconName = "documentsFolder.png"; break;
-          case "downloads": iconName = "downloadsFolder.png"; break;
-          case "music": iconName = "musicFolder.png"; break;
-          case "pictures": iconName = "imagesFolder.png"; break;
-          case "videos": iconName = "videosFolder.png"; break;
-          case ".git": iconName = "gitFolder.png"; break;
-          case "onedrive": iconName = "onedriveFolder.png"; break;
-        }
-
-        if (iconName != null) {
-          this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
+        if (isVolume) {
+          if (Name == "C:") {
+            this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\C.png"));
+          } else {
+            this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\externalVolume.png"));
+          }
         } else {
-          this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\Config\\Resources\\folder.png"));
-        }
+          string? iconName = null;
+          switch (Name.ToLower()) {
+            case "desktop": iconName = "desktopFolder.png"; break;
+            case "documents": iconName = "documentsFolder.png"; break;
+            case "downloads": iconName = "downloadsFolder.png"; break;
+            case "music": iconName = "musicFolder.png"; break;
+            case "pictures": iconName = "imagesFolder.png"; break;
+            case "videos": iconName = "videosFolder.png"; break;
+            case ".git": iconName = "gitFolder.png"; break;
+            case "onedrive": iconName = "onedriveFolder.png"; break;
+          }
 
+          if (iconName != null) {
+            this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\PlugBoard\\Plugin_Everything\\Plugin\\" + iconName));
+          } else {
+            this.Icon = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\Config\\Resources\\folder.png"));
+          }
+        }
       } else {
 
         string iconName = "file.png";

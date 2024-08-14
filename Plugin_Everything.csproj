@@ -60,6 +60,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>audio.png</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="C.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>C.png</TargetPath>
+    </ContentWithTargetPath>
     <ContentWithTargetPath Include="code.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>code.png</TargetPath>
@@ -83,6 +87,10 @@
     <ContentWithTargetPath Include="downloadsFolder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>downloadsFolder.png</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="externalVolume.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>externalVolume.png</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="file.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
