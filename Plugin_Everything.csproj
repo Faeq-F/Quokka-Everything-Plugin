@@ -68,6 +68,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>code.png</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="contextMenu.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>contextMenu.png</TargetPath>
+    </ContentWithTargetPath>
     <ContentWithTargetPath Include="database.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>database.png</TargetPath>

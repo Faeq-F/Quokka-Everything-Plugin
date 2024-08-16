@@ -300,6 +300,40 @@
                 UseLayoutRounding="True" />
             </Grid>
           </Grid>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="1*" />
+              <ColumnDefinition Width="9*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+              <Image
+                Width="{DynamicResource ContextPaneListItemIconSize}"
+                Height="{DynamicResource ContextPaneListItemIconSize}"
+                Margin="{DynamicResource ContextPaneListItemIconMargin}"
+                d:Height="20"
+                d:Margin="0,0,0,0"
+                d:Width="20"
+                Source="pack://siteoforigin:,,,/PlugBoard/Plugin_Everything/Plugin/contextMenu.png"
+                UseLayoutRounding="True" />
+            </Grid>
+            <Grid Grid.Column="1">
+
+              <Button
+                Margin="{DynamicResource ContextPaneListItemContentMargin}"
+                Padding="{DynamicResource ContextPaneListItemTextPadding}"
+                d:Margin="10"
+                d:Padding="10"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="OpenContextMenu"
+                Content="Open context menu"
+                FontFamily="{DynamicResource AppFont}"
+                FontSize="{DynamicResource ContextPaneListItemSize}"
+                Foreground="{DynamicResource ContextPaneListItemColor}"
+                Style="{StaticResource TransparentStyle}"
+                UseLayoutRounding="True" />
+            </Grid>
+          </Grid>
         </ListView>
       </Grid>
     </Grid>

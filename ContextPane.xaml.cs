@@ -52,6 +52,14 @@ namespace Plugin_Everything {
       Process.Start("rundll32.exe", args);
     }
 
+    private void OpenContextMenu(object sender, System.Windows.RoutedEventArgs e) {
+      App.Current.MainWindow.Close();
+      ShellContextMenu scm = new ShellContextMenu();
+      FileInfo[] files = new FileInfo[1];
+      files[0] = new FileInfo(Item!.Description);
+      scm.ShowContextMenu(files, System.Windows.Forms.Cursor.Position);
+    }
+
     /// <summary>
     /// <inheritdoc/><br />
     /// Up and down keys select list items and the enter key executes the item's action
