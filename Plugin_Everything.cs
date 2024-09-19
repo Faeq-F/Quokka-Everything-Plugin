@@ -9,13 +9,13 @@ namespace Plugin_Everything {
   /// <summary>
   /// The Everything Plugin
   /// </summary>
-  public partial class Everything : IPlugger {
+  public partial class Everything : Plugin {
 
     /// <summary>
     /// <inheritdoc/><br />
     /// The name is "Everything"
     /// </summary>
-    public string PluggerName { get; set; } = "Everything";
+    public override string PluggerName { get; set; } = "Everything";
 
     private static Settings pluginSettings = new();
     internal static Settings PluginSettings { get => pluginSettings; set => pluginSettings = value; }
@@ -33,14 +33,7 @@ namespace Plugin_Everything {
       }
     }
 
-    /// <summary>
-    /// <inheritdoc /><br />
-    /// Executes the query, obtains the relevant information for each item from Everything and then creates EverythingItems for them
-    /// </summary>
-    /// <param name="query"><inheritdoc/></param>
-    /// <returns><inheritdoc/></returns>
-    public List<ListItem> OnQueryChange(string query) {
-
+    private List<ListItem> ProduceItems(string query) {
       UInt32 i;
       if (query.Contains(PluginSettings.EverythingSettings.MatchPathFlag)) {
         query = query.Replace(PluginSettings.EverythingSettings.MatchPathFlag, "");
@@ -88,39 +81,34 @@ namespace Plugin_Everything {
     }
 
     /// <summary>
-    /// <inheritdoc/>
+    /// <inheritdoc /><br />
+    /// Executes the query, obtains the relevant information for each item from Everything and then creates EverythingItems for them
     /// </summary>
-    /// <returns>An empty list - this plugin has no special commands</returns>
-    public List<String> SpecialCommands() {
-      return new List<String>();
-    }
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <param name="command"><inheritdoc/><br/>This plugin has no special commands - this method cannot be called</param>
+    /// <param name="query"><inheritdoc/></param>
     /// <returns><inheritdoc/></returns>
-    public List<ListItem> OnSpecialCommand(string command) {
-      return new List<ListItem>();
+    public override List<ListItem> OnQueryChange(string query) {
+      return ProduceItems(query);
+
     }
 
     /// <summary>
-    /// <inheritdoc/><br/>
-    /// Does Nothing.
+    /// <inheritdoc/>
     /// </summary>
-    public void OnAppStartup() { }
+    /// <returns>
+    /// The EverythingSignifier from plugin settings
+    /// </returns>
+    public override List<string> CommandSignifiers() {
+      return new List<string>() { PluginSettings.EverythingSignifier };
+    }
 
     /// <summary>
-    /// <inheritdoc/><br/>
-    /// Does Nothing.
+    /// <inheritdoc/>
     /// </summary>
-    public void OnAppShutdown() { }
-
-    /// <summary>
-    /// <inheritdoc/><br/>
-    /// Does Nothing.
-    /// </summary>
-    public void OnSearchWindowStartup() { }
+    /// <param name="command">The EverythingSignifier (Since there is only 1 signifier for this plugin), followed by the file / folder being searched for</param>
+    /// <returns>List of files / folders that possibly match what is being searched for</returns>
+    public override List<ListItem> OnSignifier(string command) {
+      return ProduceItems(command.Substring(PluginSettings.EverythingSignifier.Length));
+    }
 
   }
 

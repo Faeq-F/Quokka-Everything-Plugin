@@ -28,12 +28,14 @@ namespace Plugin_Everything {
   ///    files[0] = new FileInfo(@"c:\windows\notepad.exe");<br />
   ///    scm.ShowContextMenu(this.Handle, files, Cursor.Position);<br />
   /// </example>
-  public class ShellContextMenu : NativeWindow {
+  public class ShellContextMenu : NativeWindow { //disabled warnings for Quokka
     #region Constructor
     /// <summary>Default constructor</summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public ShellContextMenu() {
       this.CreateHandle(new CreateParams());
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     #endregion
 
     #region Destructor
@@ -48,6 +50,7 @@ namespace Plugin_Everything {
     /// <param name="oParentFolder">Parent folder</param>
     /// <param name="arrPIDLs">PIDLs</param>
     /// <returns>true if it got the interfaces, otherwise false</returns>
+#pragma warning disable CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
     private bool GetContextMenuInterfaces(IShellFolder oParentFolder, IntPtr[] arrPIDLs, out IntPtr ctxMenuPtr) {
       int nResult = oParentFolder.GetUIObjectOf(
           IntPtr.Zero,
@@ -63,10 +66,13 @@ namespace Plugin_Everything {
         return true;
       } else {
         ctxMenuPtr = IntPtr.Zero;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         return false;
       }
     }
+#pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
     #endregion
 
     #region Override
@@ -150,27 +156,38 @@ namespace Plugin_Everything {
     private void ReleaseAll() {
       if (null != _oContextMenu) {
         Marshal.ReleaseComObject(_oContextMenu);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
       if (null != _oContextMenu2) {
         Marshal.ReleaseComObject(_oContextMenu2);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu2 = null;
       }
       if (null != _oContextMenu3) {
         Marshal.ReleaseComObject(_oContextMenu3);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu3 = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
       if (null != _oDesktopFolder) {
         Marshal.ReleaseComObject(_oDesktopFolder);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oDesktopFolder = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
       if (null != _oParentFolder) {
         Marshal.ReleaseComObject(_oParentFolder);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oParentFolder = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
       if (null != _arrPIDLs) {
         FreePIDLs(_arrPIDLs);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _arrPIDLs = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
     }
     #endregion
@@ -206,7 +223,9 @@ namespace Plugin_Everything {
       if (null == _oParentFolder) {
         IShellFolder oDesktopFolder = GetDesktopFolder();
         if (null == oDesktopFolder) {
+#pragma warning disable CS8603 // Possible null reference return.
           return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         // Get the PIDL for the folder file is in
@@ -215,7 +234,9 @@ namespace Plugin_Everything {
         SFGAO pdwAttributes = 0;
         int nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten, out pPIDL, ref pdwAttributes);
         if (S_OK != nResult) {
+#pragma warning disable CS8603 // Possible null reference return.
           return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         IntPtr pStrRet = Marshal.AllocCoTaskMem(MAX_PATH * 2 + 4);
@@ -233,7 +254,9 @@ namespace Plugin_Everything {
         // Free the PIDL first
         Marshal.FreeCoTaskMem(pPIDL);
         if (S_OK != nResult) {
+#pragma warning disable CS8603 // Possible null reference return.
           return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
         _oParentFolder = (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof(IShellFolder));
       }
@@ -250,12 +273,16 @@ namespace Plugin_Everything {
     /// <returns>Array of PIDLs</returns>
     protected IntPtr[] GetPIDLs(FileInfo[] arrFI) {
       if (null == arrFI || 0 == arrFI.Length) {
+#pragma warning disable CS8603 // Possible null reference return.
         return null;
+#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IShellFolder oParentFolder = GetParentFolder(arrFI[0].DirectoryName);
       if (null == oParentFolder) {
+#pragma warning disable CS8603 // Possible null reference return.
         return null;
+#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
@@ -268,7 +295,9 @@ namespace Plugin_Everything {
         int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
         if (S_OK != nResult) {
           FreePIDLs(arrPIDLs);
+#pragma warning disable CS8603 // Possible null reference return.
           return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
         arrPIDLs[n] = pPIDL;
         n++;
@@ -284,12 +313,16 @@ namespace Plugin_Everything {
     /// <returns>Array of PIDLs</returns>
     protected IntPtr[] GetPIDLs(DirectoryInfo[] arrFI) {
       if (null == arrFI || 0 == arrFI.Length) {
+#pragma warning disable CS8603 // Possible null reference return.
         return null;
+#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IShellFolder oParentFolder = GetParentFolder(arrFI[0].Parent.FullName);
       if (null == oParentFolder) {
+#pragma warning disable CS8603 // Possible null reference return.
         return null;
+#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
@@ -302,7 +335,9 @@ namespace Plugin_Everything {
         int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
         if (S_OK != nResult) {
           FreePIDLs(arrPIDLs);
+#pragma warning disable CS8603 // Possible null reference return.
           return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
         arrPIDLs[n] = pPIDL;
         n++;
@@ -403,6 +438,8 @@ namespace Plugin_Everything {
       this.ShowContextMenu(pointScreen);
     }
 
+
+#pragma warning disable CS1572 // XML comment has a param tag, but there is no parameter by that name
     /// <summary>
     /// Shows the context menu
     /// </summary>
@@ -477,6 +514,7 @@ namespace Plugin_Everything {
         ReleaseAll();
       }
     }
+#pragma warning restore CS1572 // XML comment has a param tag, but there is no parameter by that name
     #endregion
 
     #region Local variabled
@@ -1298,7 +1336,9 @@ namespace Plugin_Everything {
   }
 
   #region ShellContextMenuException
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
   public class ShellContextMenuException : Exception {
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     /// <summary>Default contructor</summary>
     public ShellContextMenuException() {
     }
@@ -1312,76 +1352,143 @@ namespace Plugin_Everything {
   #endregion
 
   #region Class HookEventArgs
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
   public class HookEventArgs : EventArgs {
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public int HookCode;  // Hook code
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public IntPtr wParam; // WPARAM argument
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public IntPtr lParam; // LPARAM argument
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
   #endregion
 
   #region Enum HookType
   // Hook Types
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
   public enum HookType : int {
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_JOURNALRECORD = 0,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_JOURNALPLAYBACK = 1,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_KEYBOARD = 2,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_GETMESSAGE = 3,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CALLWNDPROC = 4,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CBT = 5,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_SYSMSGFILTER = 6,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_MOUSE = 7,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_HARDWARE = 8,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_DEBUG = 9,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_SHELL = 10,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_FOREGROUNDIDLE = 11,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CALLWNDPROCRET = 12,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_KEYBOARD_LL = 13,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_MOUSE_LL = 14
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
   #endregion
 
   #region Class LocalWindowsHook
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
   public class LocalWindowsHook {
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
     // Filter function delegate
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Internal properties
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected IntPtr m_hhook = IntPtr.Zero;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
     protected HookProc m_filterFunc = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected HookType m_hookType;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Event delegate
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public delegate void HookEventHandler(object sender, HookEventArgs e);
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Event: HookInvoked 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public event HookEventHandler HookInvoked;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected void OnHookInvoked(HookEventArgs e) {
       if (HookInvoked != null)
         HookInvoked(this, e);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Class constructor(s)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public LocalWindowsHook(HookType hook) {
       m_hookType = hook;
       m_filterFunc = new HookProc(this.CoreHookProc);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public LocalWindowsHook(HookType hook, HookProc func) {
       m_hookType = hook;
       m_filterFunc = func;
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     // ************************************************************************
 
     // ************************************************************************
     // Default filter function
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected int CoreHookProc(int code, IntPtr wParam, IntPtr lParam) {
       if (code < 0)
         return CallNextHookEx(m_hhook, code, wParam, lParam);
@@ -1396,24 +1503,31 @@ namespace Plugin_Everything {
       // Yield to the next hook in the chain
       return CallNextHookEx(m_hhook, code, wParam, lParam);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Install the hook
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public void Install() {
+#pragma warning disable CS0618 // Type or member is obsolete
       m_hhook = SetWindowsHookEx(
           m_hookType,
           m_filterFunc,
           IntPtr.Zero,
           (int) AppDomain.GetCurrentThreadId());
+#pragma warning restore CS0618 // Type or member is obsolete
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Uninstall the hook
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public void Uninstall() {
       UnhookWindowsHookEx(m_hhook);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
 
@@ -1421,7 +1535,9 @@ namespace Plugin_Everything {
     // ************************************************************************
     // Win32: SetWindowsHookEx()
     [DllImport("user32.dll")]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern IntPtr SetWindowsHookEx(HookType code,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         HookProc func,
         IntPtr hInstance,
         int threadID);
@@ -1430,13 +1546,17 @@ namespace Plugin_Everything {
     // ************************************************************************
     // Win32: UnhookWindowsHookEx()
     [DllImport("user32.dll")]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern int UnhookWindowsHookEx(IntPtr hhook);
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Win32: CallNextHookEx()
     [DllImport("user32.dll")]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern int CallNextHookEx(IntPtr hhook,
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         int code, IntPtr wParam, IntPtr lParam);
     // ************************************************************************
     #endregion

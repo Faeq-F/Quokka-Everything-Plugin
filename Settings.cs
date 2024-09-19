@@ -74,6 +74,14 @@ public class Settings {
   /// The application used to preview items
   /// </summary>
   public string Previewer { get; set; } = "explorer";
+
+  /// <summary>
+  /// The command signifier used to only show items from this plugin (defaults to "f? ")<br />
+  /// Using this signifier does not change the output of this plugin, it only
+  /// ensures that no other plugins' results are included in the search window results list
+  /// </summary>
+  public string EverythingSignifier { get; set; } = "f? ";
+
   /// <summary>
   /// Settings for the Everything Service 
   /// </summary>
