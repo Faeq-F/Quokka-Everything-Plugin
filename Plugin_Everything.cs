@@ -107,7 +107,8 @@ namespace Plugin_Everything {
     /// <param name="command">The EverythingSignifier (Since there is only 1 signifier for this plugin), followed by the file / folder being searched for</param>
     /// <returns>List of files / folders that possibly match what is being searched for</returns>
     public override List<ListItem> OnSignifier(string command) {
-      return ProduceItems(command.Substring(PluginSettings.EverythingSignifier.Length));
+      command = command.Substring(PluginSettings.EverythingSignifier.Length);
+      return FuzzySearch.sort(command, ProduceItems(command)).ToList();
     }
 
   }

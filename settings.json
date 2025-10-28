@@ -6,7 +6,7 @@
     "MatchCaseFlag": " --MatchCase",
     "MatchWholeWordFlag": " --MatchWholeWord",
     "RegexFlag": " --Regex",
-    "MaxResultsFromQuery": "700"
+    "MaxResultsFromQuery": "20"
   },
   "ItemTypes": {
     "Document": [

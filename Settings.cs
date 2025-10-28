@@ -19,9 +19,9 @@ public class EverythingSettings {
   /// </summary>
   public string RegexFlag { get; set; } = " --Regex";
   /// <summary>
-  /// The number of results, from the Everything service, to sort through. These results are obtained before Quokka's relevance sorting. Defaults to 700
+  /// The number of results, from the Everything service, to sort through. These results are obtained before Quokka's relevance sorting. Defaults to 20
   /// </summary>
-  public string MaxResultsFromQuery { get; set; } = "700";
+  public string MaxResultsFromQuery { get; set; } = "20";
 }
 
 /// <summary>
