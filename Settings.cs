@@ -73,7 +73,7 @@ public class Settings {
   /// <summary>
   /// The application used to preview items
   /// </summary>
-  public string Previewer { get; set; } = "explorer";
+  public string Previewer { get; set; } = "C:\\Windows\\explorer.exe";
 
   /// <summary>
   /// The command signifier used to only show items from this plugin (defaults to "f? ")<br />

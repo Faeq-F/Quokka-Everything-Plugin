@@ -1,6 +1,6 @@
 {
   "EverythingSignifier": "f? ",
-  "Previewer": "G:\\PortableApps\\QuickLook\\QuickLook.exe",
+  "Previewer": "C:\\Windows\\explorer.exe",
   "EverythingSettings": {
     "MatchPathFlag": " --MatchPath",
     "MatchCaseFlag": " --MatchCase",
