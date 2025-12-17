@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Plugin_Everything {
+namespace PluginEverything
+{
   /// <summary>
   /// "Stand-alone" shell context menu
   /// 
@@ -28,19 +29,20 @@ namespace Plugin_Everything {
   ///    files[0] = new FileInfo(@"c:\windows\notepad.exe");<br />
   ///    scm.ShowContextMenu(this.Handle, files, Cursor.Position);<br />
   /// </example>
-  public class ShellContextMenu : NativeWindow { //disabled warnings for Quokka
+  public class ShellContextMenu : NativeWindow
+  { 
     #region Constructor
     /// <summary>Default constructor</summary>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public ShellContextMenu() {
+    public ShellContextMenu()
+    {
       this.CreateHandle(new CreateParams());
     }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     #endregion
 
     #region Destructor
     /// <summary>Ensure all resources get released</summary>
-    ~ShellContextMenu() {
+    ~ShellContextMenu()
+    {
       ReleaseAll();
     }
     #endregion
@@ -50,29 +52,29 @@ namespace Plugin_Everything {
     /// <param name="oParentFolder">Parent folder</param>
     /// <param name="arrPIDLs">PIDLs</param>
     /// <returns>true if it got the interfaces, otherwise false</returns>
-#pragma warning disable CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
-    private bool GetContextMenuInterfaces(IShellFolder oParentFolder, IntPtr[] arrPIDLs, out IntPtr ctxMenuPtr) {
+    private bool GetContextMenuInterfaces(IShellFolder oParentFolder, IntPtr[] arrPIDLs, out IntPtr ctxMenuPtr)
+    {
       int nResult = oParentFolder.GetUIObjectOf(
           IntPtr.Zero,
-          (uint) arrPIDLs.Length,
+          (uint)arrPIDLs.Length,
           arrPIDLs,
           ref IID_IContextMenu,
           IntPtr.Zero,
           out ctxMenuPtr);
 
-      if (S_OK == nResult) {
-        _oContextMenu = (IContextMenu) Marshal.GetTypedObjectForIUnknown(ctxMenuPtr, typeof(IContextMenu));
+      if (S_OK == nResult)
+      {
+        _oContextMenu = (IContextMenu)Marshal.GetTypedObjectForIUnknown(ctxMenuPtr, typeof(IContextMenu));
 
         return true;
-      } else {
+      }
+      else
+      {
         ctxMenuPtr = IntPtr.Zero;
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         return false;
       }
     }
-#pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
     #endregion
 
     #region Override
@@ -84,18 +86,21 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="m">the Message of the Browser's WndProc</param>
     /// <returns>true if the message has been handled, false otherwise</returns>
-    protected override void WndProc(ref Message m) {
+    protected override void WndProc(ref Message m)
+    {
       #region IContextMenu
 
       if (_oContextMenu != null &&
-          m.Msg == (int) WM.MENUSELECT &&
-          ( (int) ShellHelper.HiWord(m.WParam) & (int) MFT.SEPARATOR ) == 0 &&
-          ( (int) ShellHelper.HiWord(m.WParam) & (int) MFT.POPUP ) == 0) {
+          m.Msg == (int)WM.MENUSELECT &&
+          ((int)ShellHelper.HiWord(m.WParam) & (int)MFT.SEPARATOR) == 0 &&
+          ((int)ShellHelper.HiWord(m.WParam) & (int)MFT.POPUP) == 0)
+      {
         string info = string.Empty;
 
-        if (ShellHelper.LoWord(m.WParam) == (int) CMD_CUSTOM.ExpandCollapse)
+        if (ShellHelper.LoWord(m.WParam) == (int)CMD_CUSTOM.ExpandCollapse)
           info = "Expands or collapses the current selected item";
-        else {
+        else
+        {
           info = "";
         }
       }
@@ -105,11 +110,12 @@ namespace Plugin_Everything {
       #region IContextMenu2
 
       if (_oContextMenu2 != null &&
-          ( m.Msg == (int) WM.INITMENUPOPUP ||
-           m.Msg == (int) WM.MEASUREITEM ||
-           m.Msg == (int) WM.DRAWITEM )) {
+          (m.Msg == (int)WM.INITMENUPOPUP ||
+           m.Msg == (int)WM.MEASUREITEM ||
+           m.Msg == (int)WM.DRAWITEM))
+      {
         if (_oContextMenu2.HandleMenuMsg(
-            (uint) m.Msg, m.WParam, m.LParam) == S_OK)
+            (uint)m.Msg, m.WParam, m.LParam) == S_OK)
           return;
       }
 
@@ -118,9 +124,10 @@ namespace Plugin_Everything {
       #region IContextMenu3
 
       if (_oContextMenu3 != null &&
-          m.Msg == (int) WM.MENUCHAR) {
+          m.Msg == (int)WM.MENUCHAR)
+      {
         if (_oContextMenu3.HandleMenuMsg2(
-            (uint) m.Msg, m.WParam, m.LParam, IntPtr.Zero) == S_OK)
+            (uint)m.Msg, m.WParam, m.LParam, IntPtr.Zero) == S_OK)
           return;
       }
 
@@ -132,18 +139,21 @@ namespace Plugin_Everything {
     #endregion
 
     #region InvokeCommand
-    private void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder, Point pointInvoke) {
-      CMINVOKECOMMANDINFOEX invoke = new CMINVOKECOMMANDINFOEX();
-      invoke.cbSize = cbInvokeCommand;
-      invoke.lpVerb = (IntPtr) ( nCmd - CMD_FIRST );
-      invoke.lpDirectory = strFolder;
-      invoke.lpVerbW = (IntPtr) ( nCmd - CMD_FIRST );
-      invoke.lpDirectoryW = strFolder;
-      invoke.fMask = CMIC.UNICODE | CMIC.PTINVOKE |
-          ( ( Control.ModifierKeys & Keys.Control ) != 0 ? CMIC.CONTROL_DOWN : 0 ) |
-          ( ( Control.ModifierKeys & Keys.Shift ) != 0 ? CMIC.SHIFT_DOWN : 0 );
-      invoke.ptInvoke = new POINT(pointInvoke.X, pointInvoke.Y);
-      invoke.nShow = SW.SHOWNORMAL;
+    private void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder, Point pointInvoke)
+    {
+      CMINVOKECOMMANDINFOEX invoke = new()
+      {
+        cbSize = cbInvokeCommand,
+        lpVerb = (IntPtr)(nCmd - CMD_FIRST),
+        lpDirectory = strFolder,
+        lpVerbW = (IntPtr)(nCmd - CMD_FIRST),
+        lpDirectoryW = strFolder,
+        fMask = CMIC.UNICODE | CMIC.PTINVOKE |
+            ((Control.ModifierKeys & Keys.Control) != 0 ? CMIC.CONTROL_DOWN : 0) |
+            ((Control.ModifierKeys & Keys.Shift) != 0 ? CMIC.SHIFT_DOWN : 0),
+        ptInvoke = new POINT(pointInvoke.X, pointInvoke.Y),
+        nShow = SW.SHOWNORMAL
+      };
 
       oContextMenu.InvokeCommand(ref invoke);
     }
@@ -153,41 +163,37 @@ namespace Plugin_Everything {
     /// <summary>
     /// Release all allocated interfaces, PIDLs 
     /// </summary>
-    private void ReleaseAll() {
-      if (null != _oContextMenu) {
+    private void ReleaseAll()
+    {
+      if (null != _oContextMenu)
+      {
         Marshal.ReleaseComObject(_oContextMenu);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
-      if (null != _oContextMenu2) {
+      if (null != _oContextMenu2)
+      {
         Marshal.ReleaseComObject(_oContextMenu2);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu2 = null;
       }
-      if (null != _oContextMenu3) {
+      if (null != _oContextMenu3)
+      {
         Marshal.ReleaseComObject(_oContextMenu3);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oContextMenu3 = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
-      if (null != _oDesktopFolder) {
+      if (null != _oDesktopFolder)
+      {
         Marshal.ReleaseComObject(_oDesktopFolder);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oDesktopFolder = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
-      if (null != _oParentFolder) {
+      if (null != _oParentFolder)
+      {
         Marshal.ReleaseComObject(_oParentFolder);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _oParentFolder = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
-      if (null != _arrPIDLs) {
+      if (null != _arrPIDLs)
+      {
         FreePIDLs(_arrPIDLs);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         _arrPIDLs = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
       }
     }
     #endregion
@@ -197,16 +203,19 @@ namespace Plugin_Everything {
     /// Gets the desktop folder
     /// </summary>
     /// <returns>IShellFolder for desktop folder</returns>
-    private IShellFolder GetDesktopFolder() {
+    private IShellFolder GetDesktopFolder()
+    {
       IntPtr pUnkownDesktopFolder = IntPtr.Zero;
 
-      if (null == _oDesktopFolder) {
+      if (null == _oDesktopFolder)
+      {
         // Get desktop IShellFolder
         int nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
-        if (S_OK != nResult) {
+        if (S_OK != nResult)
+        {
           throw new ShellContextMenuException("Failed to get the desktop shell folder");
         }
-        _oDesktopFolder = (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof(IShellFolder));
+        _oDesktopFolder = (IShellFolder)Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof(IShellFolder));
       }
 
       return _oDesktopFolder;
@@ -219,13 +228,14 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="folderName">Folder path</param>
     /// <returns>IShellFolder for the folder (relative from the desktop)</returns>
-    private IShellFolder GetParentFolder(string folderName) {
-      if (null == _oParentFolder) {
+    private IShellFolder GetParentFolder(string folderName)
+    {
+      if (null == _oParentFolder)
+      {
         IShellFolder oDesktopFolder = GetDesktopFolder();
-        if (null == oDesktopFolder) {
-#pragma warning disable CS8603 // Possible null reference return.
+        if (null == oDesktopFolder)
+        {
           return null;
-#pragma warning restore CS8603 // Possible null reference return.
         }
 
         // Get the PIDL for the folder file is in
@@ -233,16 +243,15 @@ namespace Plugin_Everything {
         uint pchEaten = 0;
         SFGAO pdwAttributes = 0;
         int nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten, out pPIDL, ref pdwAttributes);
-        if (S_OK != nResult) {
-#pragma warning disable CS8603 // Possible null reference return.
+        if (S_OK != nResult)
+        {
           return null;
-#pragma warning restore CS8603 // Possible null reference return.
         }
 
         IntPtr pStrRet = Marshal.AllocCoTaskMem(MAX_PATH * 2 + 4);
         Marshal.WriteInt32(pStrRet, 0, 0);
         nResult = _oDesktopFolder.GetDisplayNameOf(pPIDL, SHGNO.FORPARSING, pStrRet);
-        StringBuilder strFolder = new StringBuilder(MAX_PATH);
+        StringBuilder strFolder = new(MAX_PATH);
         StrRetToBuf(pStrRet, pPIDL, strFolder, MAX_PATH);
         Marshal.FreeCoTaskMem(pStrRet);
         pStrRet = IntPtr.Zero;
@@ -253,12 +262,11 @@ namespace Plugin_Everything {
         nResult = oDesktopFolder.BindToObject(pPIDL, IntPtr.Zero, ref IID_IShellFolder, out pUnknownParentFolder);
         // Free the PIDL first
         Marshal.FreeCoTaskMem(pPIDL);
-        if (S_OK != nResult) {
-#pragma warning disable CS8603 // Possible null reference return.
+        if (S_OK != nResult)
+        {
           return null;
-#pragma warning restore CS8603 // Possible null reference return.
         }
-        _oParentFolder = (IShellFolder) Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof(IShellFolder));
+        _oParentFolder = (IShellFolder)Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof(IShellFolder));
       }
 
       return _oParentFolder;
@@ -271,33 +279,32 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="arrFI">Array of FileInfo</param>
     /// <returns>Array of PIDLs</returns>
-    protected IntPtr[] GetPIDLs(FileInfo[] arrFI) {
-      if (null == arrFI || 0 == arrFI.Length) {
-#pragma warning disable CS8603 // Possible null reference return.
+    protected IntPtr[] GetPIDLs(FileInfo[] arrFI)
+    {
+      if (null == arrFI || 0 == arrFI.Length)
+      {
         return null;
-#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IShellFolder oParentFolder = GetParentFolder(arrFI[0].DirectoryName);
-      if (null == oParentFolder) {
-#pragma warning disable CS8603 // Possible null reference return.
+      if (null == oParentFolder)
+      {
         return null;
-#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
       int n = 0;
-      foreach (FileInfo fi in arrFI) {
+      foreach (FileInfo fi in arrFI)
+      {
         // Get the file relative to folder
         uint pchEaten = 0;
         SFGAO pdwAttributes = 0;
         IntPtr pPIDL = IntPtr.Zero;
         int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-        if (S_OK != nResult) {
+        if (S_OK != nResult)
+        {
           FreePIDLs(arrPIDLs);
-#pragma warning disable CS8603 // Possible null reference return.
           return null;
-#pragma warning restore CS8603 // Possible null reference return.
         }
         arrPIDLs[n] = pPIDL;
         n++;
@@ -311,33 +318,32 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="arrFI">Array of DirectoryInfo</param>
     /// <returns>Array of PIDLs</returns>
-    protected IntPtr[] GetPIDLs(DirectoryInfo[] arrFI) {
-      if (null == arrFI || 0 == arrFI.Length) {
-#pragma warning disable CS8603 // Possible null reference return.
+    protected IntPtr[] GetPIDLs(DirectoryInfo[] arrFI)
+    {
+      if (null == arrFI || 0 == arrFI.Length)
+      {
         return null;
-#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IShellFolder oParentFolder = GetParentFolder(arrFI[0].Parent.FullName);
-      if (null == oParentFolder) {
-#pragma warning disable CS8603 // Possible null reference return.
+      if (null == oParentFolder)
+      {
         return null;
-#pragma warning restore CS8603 // Possible null reference return.
       }
 
       IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
       int n = 0;
-      foreach (DirectoryInfo fi in arrFI) {
+      foreach (DirectoryInfo fi in arrFI)
+      {
         // Get the file relative to folder
         uint pchEaten = 0;
         SFGAO pdwAttributes = 0;
         IntPtr pPIDL = IntPtr.Zero;
         int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-        if (S_OK != nResult) {
+        if (S_OK != nResult)
+        {
           FreePIDLs(arrPIDLs);
-#pragma warning disable CS8603 // Possible null reference return.
           return null;
-#pragma warning restore CS8603 // Possible null reference return.
         }
         arrPIDLs[n] = pPIDL;
         n++;
@@ -352,10 +358,14 @@ namespace Plugin_Everything {
     /// Free the PIDLs
     /// </summary>
     /// <param name="arrPIDLs">Array of PIDLs (IntPtr)</param>
-    protected void FreePIDLs(IntPtr[] arrPIDLs) {
-      if (null != arrPIDLs) {
-        for (int n = 0; n < arrPIDLs.Length; n++) {
-          if (arrPIDLs[n] != IntPtr.Zero) {
+    protected void FreePIDLs(IntPtr[] arrPIDLs)
+    {
+      if (null != arrPIDLs)
+      {
+        for (int n = 0; n < arrPIDLs.Length; n++)
+        {
+          if (arrPIDLs[n] != IntPtr.Zero)
+          {
             Marshal.FreeCoTaskMem(arrPIDLs[n]);
             arrPIDLs[n] = IntPtr.Zero;
           }
@@ -365,21 +375,25 @@ namespace Plugin_Everything {
     #endregion
 
     #region InvokeContextMenuDefault
-    private void InvokeContextMenuDefault(FileInfo[] arrFI) {
+    private void InvokeContextMenuDefault(FileInfo[] arrFI)
+    {
       // Release all resources first.
       ReleaseAll();
 
       IntPtr pMenu = IntPtr.Zero,
           iContextMenuPtr = IntPtr.Zero;
 
-      try {
+      try
+      {
         _arrPIDLs = GetPIDLs(arrFI);
-        if (null == _arrPIDLs) {
+        if (null == _arrPIDLs)
+        {
           ReleaseAll();
           return;
         }
 
-        if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr)) {
+        if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr))
+        {
           ReleaseAll();
           return;
         }
@@ -392,19 +406,25 @@ namespace Plugin_Everything {
             CMD_FIRST,
             CMD_LAST,
             CMF.DEFAULTONLY |
-            ( ( Control.ModifierKeys & Keys.Shift ) != 0 ? CMF.EXTENDEDVERBS : 0 ));
+            ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
 
-        uint nDefaultCmd = (uint) GetMenuDefaultItem(pMenu, false, 0);
-        if (nDefaultCmd >= CMD_FIRST) {
+        uint nDefaultCmd = (uint)GetMenuDefaultItem(pMenu, false, 0);
+        if (nDefaultCmd >= CMD_FIRST)
+        {
           InvokeCommand(_oContextMenu, nDefaultCmd, arrFI[0].DirectoryName, Control.MousePosition);
         }
 
         DestroyMenu(pMenu);
         pMenu = IntPtr.Zero;
-      } catch {
+      }
+      catch
+      {
         throw;
-      } finally {
-        if (pMenu != IntPtr.Zero) {
+      }
+      finally
+      {
+        if (pMenu != IntPtr.Zero)
+        {
           DestroyMenu(pMenu);
         }
         ReleaseAll();
@@ -419,7 +439,8 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="files">FileInfos (should all be in same directory)</param>
     /// <param name="pointScreen">Where to show the menu</param>
-    public void ShowContextMenu(FileInfo[] files, Point pointScreen) {
+    public void ShowContextMenu(FileInfo[] files, Point pointScreen)
+    {
       // Release all resources first.
       ReleaseAll();
       _arrPIDLs = GetPIDLs(files);
@@ -431,7 +452,8 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="dirs">DirectoryInfos (should all be in same directory)</param>
     /// <param name="pointScreen">Where to show the menu</param>
-    public void ShowContextMenu(DirectoryInfo[] dirs, Point pointScreen) {
+    public void ShowContextMenu(DirectoryInfo[] dirs, Point pointScreen)
+    {
       // Release all resources first.
       ReleaseAll();
       _arrPIDLs = GetPIDLs(dirs);
@@ -439,25 +461,28 @@ namespace Plugin_Everything {
     }
 
 
-#pragma warning disable CS1572 // XML comment has a param tag, but there is no parameter by that name
     /// <summary>
     /// Shows the context menu
     /// </summary>
     /// <param name="arrFI">FileInfos (should all be in same directory)</param>
     /// <param name="pointScreen">Where to show the menu</param>
-    private void ShowContextMenu(Point pointScreen) {
+    private void ShowContextMenu(Point pointScreen)
+    {
       IntPtr pMenu = IntPtr.Zero,
           iContextMenuPtr = IntPtr.Zero,
           iContextMenuPtr2 = IntPtr.Zero,
           iContextMenuPtr3 = IntPtr.Zero;
 
-      try {
-        if (null == _arrPIDLs) {
+      try
+      {
+        if (null == _arrPIDLs)
+        {
           ReleaseAll();
           return;
         }
 
-        if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr)) {
+        if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr))
+        {
           ReleaseAll();
           return;
         }
@@ -471,13 +496,13 @@ namespace Plugin_Everything {
             CMD_LAST,
             CMF.EXPLORE |
             CMF.NORMAL |
-            ( ( Control.ModifierKeys & Keys.Shift ) != 0 ? CMF.EXTENDEDVERBS : 0 ));
+            ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
 
         Marshal.QueryInterface(iContextMenuPtr, ref IID_IContextMenu2, out iContextMenuPtr2);
         Marshal.QueryInterface(iContextMenuPtr, ref IID_IContextMenu3, out iContextMenuPtr3);
 
-        _oContextMenu2 = (IContextMenu2) Marshal.GetTypedObjectForIUnknown(iContextMenuPtr2, typeof(IContextMenu2));
-        _oContextMenu3 = (IContextMenu3) Marshal.GetTypedObjectForIUnknown(iContextMenuPtr3, typeof(IContextMenu3));
+        _oContextMenu2 = (IContextMenu2)Marshal.GetTypedObjectForIUnknown(iContextMenuPtr2, typeof(IContextMenu2));
+        _oContextMenu3 = (IContextMenu3)Marshal.GetTypedObjectForIUnknown(iContextMenuPtr3, typeof(IContextMenu3));
 
         uint nSelected = TrackPopupMenuEx(
             pMenu,
@@ -488,17 +513,23 @@ namespace Plugin_Everything {
             IntPtr.Zero);
 
         // First invoke menu item, then destroy menu.
-        if (nSelected != 0) {
+        if (nSelected != 0)
+        {
           InvokeCommand(_oContextMenu, nSelected, _strParentFolder, pointScreen);
         }
 
         DestroyMenu(pMenu);
         pMenu = IntPtr.Zero;
-      } catch {
+      }
+      catch
+      {
         throw;
-      } finally {
+      }
+      finally
+      {
         //hook.Uninstall();
-        if (pMenu != IntPtr.Zero) {
+        if (pMenu != IntPtr.Zero)
+        {
           DestroyMenu(pMenu);
         }
 
@@ -514,7 +545,6 @@ namespace Plugin_Everything {
         ReleaseAll();
       }
     }
-#pragma warning restore CS1572 // XML comment has a param tag, but there is no parameter by that name
     #endregion
 
     #region Local variabled
@@ -571,17 +601,18 @@ namespace Plugin_Everything {
 
     #region Shell GUIDs
 
-    private static Guid IID_IShellFolder = new Guid("{000214E6-0000-0000-C000-000000000046}");
-    private static Guid IID_IContextMenu = new Guid("{000214e4-0000-0000-c000-000000000046}");
-    private static Guid IID_IContextMenu2 = new Guid("{000214f4-0000-0000-c000-000000000046}");
-    private static Guid IID_IContextMenu3 = new Guid("{bcfce0a0-ec17-11d0-8d10-00a0c90f2719}");
+    private static Guid IID_IShellFolder = new("{000214E6-0000-0000-C000-000000000046}");
+    private static Guid IID_IContextMenu = new("{000214e4-0000-0000-c000-000000000046}");
+    private static Guid IID_IContextMenu2 = new("{000214f4-0000-0000-c000-000000000046}");
+    private static Guid IID_IContextMenu3 = new("{bcfce0a0-ec17-11d0-8d10-00a0c90f2719}");
 
     #endregion
 
     #region Structs
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct CWPSTRUCT {
+    private struct CWPSTRUCT
+    {
       public IntPtr lparam;
       public IntPtr wparam;
       public int message;
@@ -590,7 +621,8 @@ namespace Plugin_Everything {
 
     // Contains extended information about a shortcut menu command
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    private struct CMINVOKECOMMANDINFOEX {
+    private struct CMINVOKECOMMANDINFOEX
+    {
       public int cbSize;
       public CMIC fMask;
       public IntPtr hwnd;
@@ -616,8 +648,10 @@ namespace Plugin_Everything {
 
     // Contains information about a menu item
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private struct MENUITEMINFO {
-      public MENUITEMINFO(string text) {
+    private struct MENUITEMINFO
+    {
+      public MENUITEMINFO(string text)
+      {
         cbSize = cbMenuItemInfo;
         dwTypeData = text;
         cch = text.Length;
@@ -650,7 +684,8 @@ namespace Plugin_Everything {
     // A generalized global memory handle used for data transfer operations by the 
     // IAdviseSink, IDataObject, and IOleCache interfaces
     [StructLayout(LayoutKind.Sequential)]
-    private struct STGMEDIUM {
+    private struct STGMEDIUM
+    {
       public TYMED tymed;
       public IntPtr hBitmap;
       public IntPtr hMetaFilePict;
@@ -664,8 +699,10 @@ namespace Plugin_Everything {
 
     // Defines the x- and y-coordinates of a point
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private struct POINT {
-      public POINT(int x, int y) {
+    private struct POINT
+    {
+      public POINT(int x, int y)
+      {
         this.x = x;
         this.y = y;
       }
@@ -681,7 +718,8 @@ namespace Plugin_Everything {
     // Defines the values used with the IShellFolder::GetDisplayNameOf and IShellFolder::SetNameOf 
     // methods to specify the type of file or folder names used by those methods
     [Flags]
-    private enum SHGNO {
+    private enum SHGNO
+    {
       NORMAL = 0x0000,
       INFOLDER = 0x0001,
       FOREDITING = 0x1000,
@@ -691,7 +729,8 @@ namespace Plugin_Everything {
 
     // The attributes that the caller is requesting, when calling IShellFolder::GetAttributesOf
     [Flags]
-    private enum SFGAO : uint {
+    private enum SFGAO : uint
+    {
       BROWSABLE = 0x8000000,
       CANCOPY = 1,
       CANDELETE = 0x20,
@@ -730,7 +769,8 @@ namespace Plugin_Everything {
     // Determines the type of items included in an enumeration. 
     // These values are used with the IShellFolder::EnumObjects method
     [Flags]
-    private enum SHCONTF {
+    private enum SHCONTF
+    {
       FOLDERS = 0x0020,
       NONFOLDERS = 0x0040,
       INCLUDEHIDDEN = 0x0080,
@@ -742,7 +782,8 @@ namespace Plugin_Everything {
 
     // Specifies how the shortcut menu can be changed when calling IContextMenu::QueryContextMenu
     [Flags]
-    private enum CMF : uint {
+    private enum CMF : uint
+    {
       NORMAL = 0x00000000,
       DEFAULTONLY = 0x00000001,
       VERBSONLY = 0x00000002,
@@ -757,7 +798,8 @@ namespace Plugin_Everything {
 
     // Flags specifying the information to return when calling IContextMenu::GetCommandString
     [Flags]
-    private enum GCS : uint {
+    private enum GCS : uint
+    {
       VERBA = 0,
       HELPTEXTA = 1,
       VALIDATEA = 2,
@@ -768,7 +810,8 @@ namespace Plugin_Everything {
 
     // Specifies how TrackPopupMenuEx positions the shortcut menu horizontally
     [Flags]
-    private enum TPM : uint {
+    private enum TPM : uint
+    {
       LEFTBUTTON = 0x0000,
       RIGHTBUTTON = 0x0002,
       LEFTALIGN = 0x0000,
@@ -791,13 +834,15 @@ namespace Plugin_Everything {
     }
 
     // The cmd for a custom added menu item
-    private enum CMD_CUSTOM {
-      ExpandCollapse = (int) CMD_LAST + 1
+    private enum CMD_CUSTOM
+    {
+      ExpandCollapse = (int)CMD_LAST + 1
     }
 
     // Flags used with the CMINVOKECOMMANDINFOEX structure
     [Flags]
-    private enum CMIC : uint {
+    private enum CMIC : uint
+    {
       HOTKEY = 0x00000020,
       ICON = 0x00000010,
       FLAG_NO_UI = 0x00000400,
@@ -813,7 +858,8 @@ namespace Plugin_Everything {
 
     // Specifies how the window is to be shown
     [Flags]
-    private enum SW {
+    private enum SW
+    {
       HIDE = 0,
       SHOWNORMAL = 1,
       NORMAL = 1,
@@ -831,7 +877,8 @@ namespace Plugin_Everything {
 
     // Window message flags
     [Flags]
-    private enum WM : uint {
+    private enum WM : uint
+    {
       ACTIVATE = 0x6,
       ACTIVATEAPP = 0x1C,
       AFXFIRST = 0x360,
@@ -1045,7 +1092,8 @@ namespace Plugin_Everything {
 
     // Specifies the content of the new menu item
     [Flags]
-    private enum MFT : uint {
+    private enum MFT : uint
+    {
       GRAYED = 0x00000003,
       DISABLED = 0x00000003,
       CHECKED = 0x00000008,
@@ -1063,7 +1111,8 @@ namespace Plugin_Everything {
 
     // Specifies the state of the new menu item
     [Flags]
-    private enum MFS : uint {
+    private enum MFS : uint
+    {
       GRAYED = 0x00000003,
       DISABLED = 0x00000003,
       CHECKED = 0x00000008,
@@ -1076,7 +1125,8 @@ namespace Plugin_Everything {
 
     // Specifies the content of the new menu item
     [Flags]
-    private enum MIIM : uint {
+    private enum MIIM : uint
+    {
       BITMAP = 0x80,
       CHECKMARKS = 0x08,
       DATA = 0x20,
@@ -1090,7 +1140,8 @@ namespace Plugin_Everything {
 
     // Indicates the type of storage medium being used in a data transfer
     [Flags]
-    private enum TYMED {
+    private enum TYMED
+    {
       ENHMF = 0x40,
       FILE = 2,
       GDI = 0x10,
@@ -1107,7 +1158,8 @@ namespace Plugin_Everything {
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [Guid("000214E6-0000-0000-C000-000000000046")]
-    private interface IShellFolder {
+    private interface IShellFolder
+    {
       // Translates a file object's or folder's display name into an item identifier list.
       // Return value: error code, if any
       [PreserveSig]
@@ -1220,7 +1272,8 @@ namespace Plugin_Everything {
     [ComImport()]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [GuidAttribute("000214e4-0000-0000-c000-000000000046")]
-    private interface IContextMenu {
+    private interface IContextMenu
+    {
       // Adds commands to a shortcut menu
       [PreserveSig()]
       Int32 QueryContextMenu(
@@ -1250,7 +1303,8 @@ namespace Plugin_Everything {
 
     [ComImport, Guid("000214f4-0000-0000-c000-000000000046")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    private interface IContextMenu2 {
+    private interface IContextMenu2
+    {
       // Adds commands to a shortcut menu
       [PreserveSig()]
       Int32 QueryContextMenu(
@@ -1288,7 +1342,8 @@ namespace Plugin_Everything {
 
     [ComImport, Guid("bcfce0a0-ec17-11d0-8d10-00a0c90f2719")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    private interface IContextMenu3 {
+    private interface IContextMenu3
+    {
       // Adds commands to a shortcut menu
       [PreserveSig()]
       Int32 QueryContextMenu(
@@ -1336,165 +1391,106 @@ namespace Plugin_Everything {
   }
 
   #region ShellContextMenuException
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-  public class ShellContextMenuException : Exception {
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+  public class ShellContextMenuException : Exception
+  {
     /// <summary>Default contructor</summary>
-    public ShellContextMenuException() {
+    public ShellContextMenuException()
+    {
     }
 
     /// <summary>Constructor with message</summary>
     /// <param name="message">Message</param>
     public ShellContextMenuException(string message)
-        : base(message) {
+        : base(message)
+    {
     }
   }
   #endregion
 
   #region Class HookEventArgs
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-  public class HookEventArgs : EventArgs {
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+  public class HookEventArgs : EventArgs
+  {
     public int HookCode;  // Hook code
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public IntPtr wParam; // WPARAM argument
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public IntPtr lParam; // LPARAM argument
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
   #endregion
 
   #region Enum HookType
   // Hook Types
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-  public enum HookType : int {
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+  public enum HookType : int
+  {
     WH_JOURNALRECORD = 0,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_JOURNALPLAYBACK = 1,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_KEYBOARD = 2,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_GETMESSAGE = 3,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CALLWNDPROC = 4,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CBT = 5,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_SYSMSGFILTER = 6,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_MOUSE = 7,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_HARDWARE = 8,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_DEBUG = 9,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_SHELL = 10,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_FOREGROUNDIDLE = 11,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_CALLWNDPROCRET = 12,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_KEYBOARD_LL = 13,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     WH_MOUSE_LL = 14
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
   #endregion
 
   #region Class LocalWindowsHook
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-  public class LocalWindowsHook {
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+  public class LocalWindowsHook
+  {
     // ************************************************************************
     // Filter function delegate
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Internal properties
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected IntPtr m_hhook = IntPtr.Zero;
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
     protected HookProc m_filterFunc = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected HookType m_hookType;
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Event delegate
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public delegate void HookEventHandler(object sender, HookEventArgs e);
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Event: HookInvoked 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public event HookEventHandler HookInvoked;
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    protected void OnHookInvoked(HookEventArgs e) {
+    protected void OnHookInvoked(HookEventArgs e)
+    {
       if (HookInvoked != null)
         HookInvoked(this, e);
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Class constructor(s)
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public LocalWindowsHook(HookType hook) {
+    public LocalWindowsHook(HookType hook)
+    {
       m_hookType = hook;
       m_filterFunc = new HookProc(this.CoreHookProc);
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public LocalWindowsHook(HookType hook, HookProc func) {
+    public LocalWindowsHook(HookType hook, HookProc func)
+    {
       m_hookType = hook;
       m_filterFunc = func;
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     // ************************************************************************
 
     // ************************************************************************
     // Default filter function
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    protected int CoreHookProc(int code, IntPtr wParam, IntPtr lParam) {
+    protected int CoreHookProc(int code, IntPtr wParam, IntPtr lParam)
+    {
       if (code < 0)
         return CallNextHookEx(m_hhook, code, wParam, lParam);
 
       // Let clients determine what to do
-      HookEventArgs e = new HookEventArgs();
+      HookEventArgs e = new();
       e.HookCode = code;
       e.wParam = wParam;
       e.lParam = lParam;
@@ -1503,31 +1499,26 @@ namespace Plugin_Everything {
       // Yield to the next hook in the chain
       return CallNextHookEx(m_hhook, code, wParam, lParam);
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Install the hook
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public void Install() {
-#pragma warning disable CS0618 // Type or member is obsolete
+    public void Install()
+    {
       m_hhook = SetWindowsHookEx(
           m_hookType,
           m_filterFunc,
           IntPtr.Zero,
-          (int) AppDomain.GetCurrentThreadId());
-#pragma warning restore CS0618 // Type or member is obsolete
+          (int)AppDomain.GetCurrentThreadId());
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Uninstall the hook
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public void Uninstall() {
+    public void Uninstall()
+    {
       UnhookWindowsHookEx(m_hhook);
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
 
@@ -1535,9 +1526,7 @@ namespace Plugin_Everything {
     // ************************************************************************
     // Win32: SetWindowsHookEx()
     [DllImport("user32.dll")]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern IntPtr SetWindowsHookEx(HookType code,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         HookProc func,
         IntPtr hInstance,
         int threadID);
@@ -1546,17 +1535,13 @@ namespace Plugin_Everything {
     // ************************************************************************
     // Win32: UnhookWindowsHookEx()
     [DllImport("user32.dll")]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern int UnhookWindowsHookEx(IntPtr hhook);
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     // ************************************************************************
 
     // ************************************************************************
     // Win32: CallNextHookEx()
     [DllImport("user32.dll")]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     protected static extern int CallNextHookEx(IntPtr hhook,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         int code, IntPtr wParam, IntPtr lParam);
     // ************************************************************************
     #endregion
@@ -1565,7 +1550,8 @@ namespace Plugin_Everything {
 
   #region ShellHelper
 
-  internal static class ShellHelper {
+  internal static class ShellHelper
+  {
     #region Low/High Word
 
     /// <summary>
@@ -1573,11 +1559,12 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="ptr">The pointer to the WParam</param>
     /// <returns>The unsigned integer for the High Word</returns>
-    public static long HiWord(IntPtr ptr) {
-      if (( (long) ptr & 0x80000000 ) == 0x80000000)
-        return ( (long) ptr >> 16 );
+    public static long HiWord(IntPtr ptr)
+    {
+      if (((long)ptr & 0x80000000) == 0x80000000)
+        return ((long)ptr >> 16);
       else
-        return ( (long) ptr >> 16 ) & 0xffff;
+        return ((long)ptr >> 16) & 0xffff;
     }
 
     /// <summary>
@@ -1585,8 +1572,9 @@ namespace Plugin_Everything {
     /// </summary>
     /// <param name="ptr">The pointer to the WParam</param>
     /// <returns>The unsigned integer for the Low Word</returns>
-    public static long LoWord(IntPtr ptr) {
-      return (long) ptr & 0xffff;
+    public static long LoWord(IntPtr ptr)
+    {
+      return (long)ptr & 0xffff;
     }
 
     #endregion

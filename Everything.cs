@@ -1,8 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Plugin_Everything {
-  public partial class Everything {
+namespace PluginEverything
+{
+  public partial class Everything
+  {
 
     #region magic values
 
