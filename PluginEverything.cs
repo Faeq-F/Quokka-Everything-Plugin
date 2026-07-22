@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Quokka.ListItems;
 using Quokka.PluginArch;
 using System.Collections.ObjectModel;
@@ -39,7 +39,7 @@ namespace PluginEverything
       }
     }
 
-    private Collection<ListItem> ProduceItems(string query)
+    private static Collection<ListItem> ProduceItems(string query)
     {
       UInt32 i;
       if (query.Contains(PluginSettings.EverythingSettings.MatchPathFlag))
@@ -78,7 +78,7 @@ namespace PluginEverything
       {
         Everything_SetRegex(false);
       }
-      Everything_SetSearchW(query);
+      _ = Everything_SetSearchW(query);
       Everything_QueryW(true);
 
 
@@ -92,8 +92,8 @@ namespace PluginEverything
         Everything_GetResultFullPathName(i, path, 256);
         bool isFolderResult = Everything_IsFolderResult(i);
         bool isVolumeResult = Everything_IsVolumeResult(i);
-        string dateModified = DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2");
-        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString(), isFolderResult, isVolumeResult, size.ToString(), dateModified));
+        string dateModified = DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2", CultureInfo.InvariantCulture);
+        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString(), isFolderResult, isVolumeResult, size.ToString(CultureInfo.InvariantCulture), dateModified));
       }
       return ItemList;
     }

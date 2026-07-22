@@ -1,4 +1,6 @@
-﻿namespace PluginEverything
+using System.Collections.ObjectModel;
+
+namespace PluginEverything
 {
   /// <summary>
   /// Settings for the Everything Service - other settings should be configured in the running everything instance
@@ -35,44 +37,45 @@
     /// <summary>
     /// File extensions for user documents
     /// </summary>
-    public List<string> Document { get; set; } = new();
+    public Collection<string> Document { get; } = new();
     /// <summary>
     /// File extensions for images
     /// </summary>
-    public List<string> Image { get; set; } = new();
+    public Collection<string> Image { get; } = new();
     /// <summary>
     /// File extensions for videos
     /// </summary>
-    public List<string> Video { get; set; } = new();
+    public Collection<string> Video { get; } = new();
     /// <summary>
     /// File extensions for audio / music
     /// </summary>
-    public List<string> Audio { get; set; } = new();
+    public Collection<string> Audio { get; } = new();
     /// <summary>
     /// File extensions for archives
     /// </summary>
-    public List<string> Archive { get; set; } = new();
+    public Collection<string> Archive { get; } = new();
     /// <summary>
     /// File extensions for font files
     /// </summary>
-    public List<string> Font { get; set; } = new();
+    public Collection<string> Font { get; } = new();
     /// <summary>
     /// File extensions for files with code
     /// </summary>
-    public List<string> Code { get; set; } = new();
+    public Collection<string> Code { get; } = new();
     /// <summary>
     /// File extensions for databases
     /// </summary>
-    public List<string> Database { get; set; } = new();
+    public Collection<string> Database { get; } = new();
     /// <summary>
     /// File extensions for system related files
     /// </summary>
-    public List<string> System { get; set; } = new();
+    public Collection<string> System { get; } = new();
   }
 
   /// <summary>
   /// The plugin's settings
   /// </summary>
+#pragma warning disable CA1724 // Type name conflicts with namespace name
   public class Settings
   {
     /// <summary>

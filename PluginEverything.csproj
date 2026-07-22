@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net4.8-windows</TargetFramework>
@@ -14,7 +14,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 
     <Product>PluginEverything</Product>
-    <BaseOutputPath>G:\Quokka\Quokka\PlugBoard\PluginEverything</BaseOutputPath>
+    <BaseOutputPath>..\BuildOutput\Quokka\PlugBoard\PluginEverything</BaseOutputPath>
     <Configurations>Plugin</Configurations>
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

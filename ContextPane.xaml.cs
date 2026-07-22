@@ -83,13 +83,13 @@ namespace PluginEverything
         switch (e.Key)
         {
           case Key.Enter:
-            if ((ButtonsListView.SelectedIndex == -1)) ButtonsListView.SelectedIndex = 0;
+            if (ButtonsListView.SelectedIndex == -1) ButtonsListView.SelectedIndex = 0;
             Grid CurrentItem = (Grid)ButtonsListView.SelectedItem;
             Button CurrentButton = (Button)((Grid)CurrentItem!.Children[1]).Children[0];
             CurrentButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             break;
           case Key.Down:
-            if ((ButtonsListView.SelectedIndex == -1))
+            if (ButtonsListView.SelectedIndex == -1)
             {
               ButtonsListView.SelectedIndex = 1;
             }

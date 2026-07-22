@@ -1,4 +1,4 @@
-﻿using Quokka;
+using Quokka;
 using Quokka.ListItems;
 using Quokka.PluginArch;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Globalization;
 namespace PluginEverything
 {
 
-  class EverythingItem : ListItem
+  sealed class EverythingItem : ListItem
   {
 
     public bool isFolder;
@@ -19,7 +19,7 @@ namespace PluginEverything
       this.Name = Name;
       this.Description = Path;
       this.isFolder = isFolder;
-      this.size = BytesToString(long.Parse(size));
+      this.size = BytesToString(long.Parse(size, CultureInfo.InvariantCulture));
       this.dateModified = dateModified;
 
       if (isFolder)
@@ -103,7 +103,7 @@ namespace PluginEverything
       long bytes = Math.Abs(byteCount);
       int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
       double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-      return (Math.Sign(byteCount) * num).ToString() + suf[place];
+      return (Math.Sign(byteCount) * num).ToString(CultureInfo.InvariantCulture) + suf[place];
     }
   }
 
