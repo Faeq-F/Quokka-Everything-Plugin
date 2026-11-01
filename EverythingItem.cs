@@ -1,13 +1,13 @@
-using Quokka;
 using Quokka.ListItems;
 using Quokka.PluginArch;
 using System.Diagnostics;
 using System.Globalization;
+using System.Windows;
 
 namespace PluginEverything
 {
 
-  sealed class EverythingItem : ListItem
+  internal sealed class EverythingItem : ListItem
   {
 
     public bool isFolder;
@@ -17,7 +17,7 @@ namespace PluginEverything
     public EverythingItem(string Name, string Path, bool isFolder, bool isVolume, string size, string dateModified)
     {
       this.Name = Name;
-      this.Description = Path;
+      Description = Path;
       this.isFolder = isFolder;
       this.size = BytesToString(long.Parse(size, CultureInfo.InvariantCulture));
       this.dateModified = dateModified;
@@ -26,14 +26,9 @@ namespace PluginEverything
       {
         if (isVolume)
         {
-          if (Name == "C:")
-          {
-            Icon = IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\C.png");
-          }
-          else
-          {
-            Icon = IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\externalVolume.png");
-          }
+          Icon = Name == "C:"
+            ? IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\C.png")
+            : IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\externalVolume.png");
         }
         else
         {
@@ -50,14 +45,9 @@ namespace PluginEverything
             case "onedrive": iconName = "onedriveFolder.png"; break;
           }
 
-          if (iconName != null)
-          {
-            Icon = IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\" + iconName);
-          }
-          else
-          {
-            Icon = IconCache.GetOrAdd(Environment.CurrentDirectory + "\\Config\\Resources\\folder.png");
-          }
+          Icon = iconName != null
+            ? IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\" + iconName)
+            : IconCache.GetOrAdd(Environment.CurrentDirectory + "\\Config\\Resources\\folder.png");
         }
       }
       else
@@ -65,15 +55,42 @@ namespace PluginEverything
 
         string iconName = "file.png";
         string ext = System.IO.Path.GetExtension(Path);
-        if (Everything.PluginSettings.ItemTypes.Document.Contains(ext)) iconName = "document.png";
-        else if (Everything.PluginSettings.ItemTypes.Image.Contains(ext)) iconName = "image.png";
-        else if (Everything.PluginSettings.ItemTypes.Video.Contains(ext)) iconName = "video.png";
-        else if (Everything.PluginSettings.ItemTypes.Audio.Contains(ext)) iconName = "audio.png";
-        else if (Everything.PluginSettings.ItemTypes.Archive.Contains(ext)) iconName = "archive.png";
-        else if (Everything.PluginSettings.ItemTypes.Font.Contains(ext)) iconName = "font.png";
-        else if (Everything.PluginSettings.ItemTypes.Code.Contains(ext)) iconName = "code.png";
-        else if (Everything.PluginSettings.ItemTypes.Database.Contains(ext)) iconName = "database.png";
-        else if (Everything.PluginSettings.ItemTypes.System.Contains(ext)) iconName = "system.png";
+        if (Everything.PluginSettings.ItemTypes.Document.Contains(ext))
+        {
+          iconName = "document.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Image.Contains(ext))
+        {
+          iconName = "image.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Video.Contains(ext))
+        {
+          iconName = "video.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Audio.Contains(ext))
+        {
+          iconName = "audio.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Archive.Contains(ext))
+        {
+          iconName = "archive.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Font.Contains(ext))
+        {
+          iconName = "font.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Code.Contains(ext))
+        {
+          iconName = "code.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.Database.Contains(ext))
+        {
+          iconName = "database.png";
+        }
+        else if (Everything.PluginSettings.ItemTypes.System.Contains(ext))
+        {
+          iconName = "system.png";
+        }
 
         Icon = IconCache.GetOrAdd(Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\" + iconName);
       }
@@ -86,20 +103,22 @@ namespace PluginEverything
     {
       if (isFolder)
       {
-        Process.Start((string)App.Current.Resources["FileManager"], '"' + Description + '"');
+        Process.Start((string)Application.Current.Resources["FileManager"], '"' + Description + '"');
       }
       else
       {
         Process.Start(Description);
       }
-      App.Current.MainWindow.Close();
+      Application.Current.MainWindow.Close();
     }
 
-    static String BytesToString(long byteCount)
+    private static string BytesToString(long byteCount)
     {
-      string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+      string[] suf = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; //Longs run out around EB
       if (byteCount == 0)
+      {
         return "0" + suf[0];
+      }
       long bytes = Math.Abs(byteCount);
       int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
       double num = Math.Round(bytes / Math.Pow(1024, place), 1);

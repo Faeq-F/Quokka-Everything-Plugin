@@ -56,6 +56,7 @@ namespace PluginEverything
     /// <summary>Gets the interfaces to the context menu</summary>
     /// <param name="oParentFolder">Parent folder</param>
     /// <param name="arrPIDLs">PIDLs</param>
+    /// <param name="ctxMenuPtr">Output pointer to the context menu interface.</param>
     /// <returns>true if it got the interfaces, otherwise false</returns>
     private bool GetContextMenuInterfaces(IShellFolder oParentFolder, IntPtr[] arrPIDLs, out IntPtr ctxMenuPtr)
     {
@@ -469,7 +470,6 @@ namespace PluginEverything
     /// <summary>
     /// Shows the context menu
     /// </summary>
-    /// <param name="arrFI">FileInfos (should all be in same directory)</param>
     /// <param name="pointScreen">Where to show the menu</param>
     private void ShowContextMenu(Point pointScreen)
     {
@@ -503,11 +503,13 @@ namespace PluginEverything
             CMF.NORMAL |
             ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
 
-        Marshal.QueryInterface(iContextMenuPtr, ref IID_IContextMenu2, out iContextMenuPtr2);
-        Marshal.QueryInterface(iContextMenuPtr, ref IID_IContextMenu3, out iContextMenuPtr3);
+        Marshal.QueryInterface(iContextMenuPtr, in IID_IContextMenu2, out iContextMenuPtr2);
+        Marshal.QueryInterface(iContextMenuPtr, in IID_IContextMenu3, out iContextMenuPtr3);
 
         _oContextMenu2 = (IContextMenu2)Marshal.GetTypedObjectForIUnknown(iContextMenuPtr2, typeof(IContextMenu2));
         _oContextMenu3 = (IContextMenu3)Marshal.GetTypedObjectForIUnknown(iContextMenuPtr3, typeof(IContextMenu3));
+
+        SetForegroundWindow(this.Handle);
 
         uint nSelected = TrackPopupMenuEx(
             pMenu,
@@ -601,6 +603,10 @@ namespace PluginEverything
     // Determines the default menu item on the specified menu
     [DllImport("user32", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern int GetMenuDefaultItem(IntPtr hMenu, bool fByPos, uint gmdiFlags);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
 
     #endregion
 
@@ -1396,7 +1402,7 @@ namespace PluginEverything
   }
 
   #region ShellContextMenuException
-  public class ShellContextMenuException : Exception
+  internal class ShellContextMenuException : Exception
   {
     /// <summary>Default contructor</summary>
     public ShellContextMenuException()
@@ -1413,7 +1419,7 @@ namespace PluginEverything
   #endregion
 
   #region Class HookEventArgs
-  public class HookEventArgs : EventArgs
+  internal class HookEventArgs : EventArgs
   {
     public int HookCode;  // Hook code
     public IntPtr wParam; // WPARAM argument
@@ -1423,7 +1429,7 @@ namespace PluginEverything
 
   #region Enum HookType
   // Hook Types
-  public enum HookType : int
+  internal enum HookType : int
   {
     WH_JOURNALRECORD = 0,
     WH_JOURNALPLAYBACK = 1,
@@ -1444,7 +1450,7 @@ namespace PluginEverything
   #endregion
 
   #region Class LocalWindowsHook
-  public class LocalWindowsHook
+  internal class LocalWindowsHook
   {
     // ************************************************************************
     // Filter function delegate

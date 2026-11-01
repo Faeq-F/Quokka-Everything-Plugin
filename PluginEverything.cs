@@ -21,8 +21,13 @@ namespace PluginEverything
     /// </summary>
     public override string PluginName { get; set; } = "Everything";
 
-    private static Settings pluginSettings = new();
-    internal static Settings PluginSettings { get => pluginSettings; set => pluginSettings = value; }
+    /// <summary>
+    /// Gets the icon for the Everything search plugin.
+    /// </summary>
+    public override System.Windows.Media.ImageSource? PluginIcon =>
+      IconCache.GetOrAdd(Path.Combine(Environment.CurrentDirectory, "PlugBoard", "PluginEverything", "Plugin", "preview.png"));
+
+    internal static Settings PluginSettings { get; set; } = new();
 
     /// <summary>
     /// Sets Everything Request Flags and Max values num. Also loads the plugin's settings
@@ -30,10 +35,10 @@ namespace PluginEverything
     public Everything()
     {
       Everything_SetRequestFlags(EVERYTHING_REQUEST_FILE_NAME | EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME | EVERYTHING_REQUEST_DATE_MODIFIED | EVERYTHING_REQUEST_SIZE);
-      Everything_SetMax(uint.Parse(Everything.PluginSettings.EverythingSettings.MaxResultsFromQuery, new CultureInfo("en-US")));
+      Everything_SetMax(uint.Parse(PluginSettings.EverythingSettings.MaxResultsFromQuery, new CultureInfo("en-US")));
       string fileName = Environment.CurrentDirectory + "\\PlugBoard\\PluginEverything\\Plugin\\settings.json";
       PluginSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(fileName))!;
-      if (!PluginSettings.Previewer.Contains("explorer"))
+      if (!PluginSettings.Previewer.Contains("explorer", StringComparison.Ordinal))
       { // the only exception - a previewer should be a user installed program
         PluginSettings.Previewer = Path.GetFullPath(PluginSettings.Previewer);
       }
@@ -41,37 +46,37 @@ namespace PluginEverything
 
     private static Collection<ListItem> ProduceItems(string query)
     {
-      UInt32 i;
-      if (query.Contains(PluginSettings.EverythingSettings.MatchPathFlag))
+      uint i;
+      if (query.Contains(PluginSettings.EverythingSettings.MatchPathFlag, StringComparison.Ordinal))
       {
-        query = query.Replace(PluginSettings.EverythingSettings.MatchPathFlag, "");
+        query = query.Replace(PluginSettings.EverythingSettings.MatchPathFlag, "", StringComparison.Ordinal);
         Everything_SetMatchPath(true);
       }
       else
       {
         Everything_SetMatchPath(false);
       }
-      if (query.Contains(PluginSettings.EverythingSettings.MatchCaseFlag))
+      if (query.Contains(PluginSettings.EverythingSettings.MatchCaseFlag, StringComparison.Ordinal))
       {
-        query = query.Replace(PluginSettings.EverythingSettings.MatchCaseFlag, "");
+        query = query.Replace(PluginSettings.EverythingSettings.MatchCaseFlag, "", StringComparison.Ordinal);
         Everything_SetMatchCase(true);
       }
       else
       {
         Everything_SetMatchCase(false);
       }
-      if (query.Contains(PluginSettings.EverythingSettings.MatchWholeWordFlag))
+      if (query.Contains(PluginSettings.EverythingSettings.MatchWholeWordFlag, StringComparison.Ordinal))
       {
-        query = query.Replace(PluginSettings.EverythingSettings.MatchWholeWordFlag, "");
+        query = query.Replace(PluginSettings.EverythingSettings.MatchWholeWordFlag, "", StringComparison.Ordinal);
         Everything_SetMatchWholeWord(true);
       }
       else
       {
         Everything_SetMatchWholeWord(false);
       }
-      if (query.Contains(PluginSettings.EverythingSettings.RegexFlag))
+      if (query.Contains(PluginSettings.EverythingSettings.RegexFlag, StringComparison.Ordinal))
       {
-        query = query.Replace(PluginSettings.EverythingSettings.RegexFlag, "");
+        query = query.Replace(PluginSettings.EverythingSettings.RegexFlag, "", StringComparison.Ordinal);
         Everything_SetRegex(true);
       }
       else
@@ -93,7 +98,7 @@ namespace PluginEverything
         bool isFolderResult = Everything_IsFolderResult(i);
         bool isVolumeResult = Everything_IsVolumeResult(i);
         string dateModified = DateTime.FromFileTime(date_modified).Year + "/" + DateTime.FromFileTime(date_modified).Month + "/" + DateTime.FromFileTime(date_modified).Day + " " + DateTime.FromFileTime(date_modified).Hour + ":" + DateTime.FromFileTime(date_modified).Minute.ToString("D2", CultureInfo.InvariantCulture);
-        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)), path.ToString(), isFolderResult, isVolumeResult, size.ToString(CultureInfo.InvariantCulture), dateModified));
+        ItemList.Add(new EverythingItem(Marshal.PtrToStringUni(Everything_GetResultFileName(i)) ?? "Undefined Name", path.ToString(), isFolderResult, isVolumeResult, size.ToString(CultureInfo.InvariantCulture), dateModified));
       }
       return ItemList;
     }

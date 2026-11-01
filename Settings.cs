@@ -91,7 +91,7 @@ namespace PluginEverything
     public string EverythingSignifier { get; set; } = "f? ";
 
     /// <summary>
-    /// Settings for the Everything Service 
+    /// Settings for the Everything Service
     /// </summary>
     public EverythingSettings EverythingSettings { get; set; } = new();
     /// <summary>
